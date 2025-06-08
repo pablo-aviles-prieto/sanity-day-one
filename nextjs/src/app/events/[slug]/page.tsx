@@ -14,7 +14,7 @@ const EVENT_QUERY = defineQuery(`*[
   ...,
   "date": coalesce(date, now()),
   "doorsOpen": coalesce(doorsOpen, 0),
-  headline->,
+  "artists": headliners[]->name,
   venue->
 }`);
 
@@ -32,7 +32,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
     notFound();
   }
 
-  const { name, date, headline, image, details, eventType, doorsOpen, venue, tickets } = event;
+  const { name, date, artists, image, details, eventType, doorsOpen, venue, tickets } = event;
   const eventImageUrl = image ? urlFor(image)?.width(550).height(310).url() : null;
   const eventDate = new Date(date).toDateString();
   const eventTime = new Date(date).toLocaleTimeString();
@@ -59,10 +59,18 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               </div>
             ) : null}
             {name ? <h1 className='text-4xl font-bold tracking-tighter mb-8'>{name}</h1> : null}
-            {headline?.name ? (
+            {artists && artists.length > 0 ? (
               <dl className='grid grid-cols-2 gap-1 text-sm font-medium sm:gap-2 lg:text-base'>
                 <dd className='font-semibold'>Artist</dd>
-                <dt>{headline?.name}</dt>
+                <dt>
+                  {artists.map((artistName, index) =>
+                    artistName ? (
+                      <span key={index} className='pr-2'>
+                        {artistName}
+                      </span>
+                    ) : null
+                  )}
+                </dt>
               </dl>
             ) : null}
             <dl className='grid grid-cols-2 gap-1 text-sm font-medium sm:gap-2 lg:text-base'>
